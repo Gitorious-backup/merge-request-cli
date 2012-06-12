@@ -37,9 +37,13 @@ Issues/TODO
 
 Lots! 
 
-
 * A non-documented issue is that we assume the Git remote on Gitorious
   is named "origin".
-- We should have a merge command (which merges and resolves)
-- Tab completion
-- Complete merge request statuses from project page on Gitorious
+* We should have a merge command (which merges and resolves)
+* Tab completion
+* Complete merge request statuses from project page on Gitorious
+
+Contributing
+----------
+
+Clone the repository, submit a merge request (!)
