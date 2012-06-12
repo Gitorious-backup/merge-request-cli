@@ -1,0 +1,132 @@
+#!/usr/bin/env ruby
+# mode: ruby
+
+require "pathname"
+require "open-uri"
+require "rubygems"
+require "nokogiri"
+class Git
+  attr_reader :remote
+  def initialize(remote="origin")
+    @remote = remote
+  end
+  
+  # def dir
+  #   path = Pathname.pwd
+  #   until path.join('.git/config').file?
+  #     return if path.root?
+  #     path = path.parent
+  #   end
+  #   path
+  # end
+
+  # def git_config
+  #   dir.join(".git/config")
+  # end
+
+  # TODO: Look for 
+  def gitorious_remote_url
+    output = `git remote -v`.scan(/^#{remote}\s+(.*).git(.*)/)
+    if output
+      output.first[0]
+    end
+  end
+
+  def repository_http_url
+    http_url(gitorious_remote_url)
+  end
+
+  def http_url(url)
+    path_match = url.scan(/gitorious.org[:\/](.*)/)
+    File.join("http://gitorious.org", path_match.first[0])
+  end
+
+    
+  def merge_requests_url(status)
+    url = File.join(http_url(gitorious_remote_url), "merge_requests.xml")
+    "#{url}?status=#{status}"
+  end
+
+  def merge_request_url(id)
+    url = File.join(http_url(gitorious_remote_url), "merge_requests", id.to_s)
+  end
+
+  def merge_requests(status="Open")
+    result = []
+    doc = Nokogiri::HTML(open(merge_requests_url(status)))
+    doc.xpath('//merge-request').each do |node|
+      mr = MergeRequest.new
+      mr.id = node.at("id").content
+      mr.summary = node.at("summary").content
+      mr.proposal = node.at("proposal").content
+      result << mr
+    end
+    result
+  end
+
+  class MergeRequest
+    attr_accessor :id, :proposal, :summary
+    def initialize
+    end
+
+    def to_s
+      "#{id}: #{summary.lines.first}"
+    end
+  end
+end
+
+class GitoriousCommand
+  attr_reader :git
+  def initialize
+    @git = Git.new("origin")
+  end
+    
+  def list_merge_requests(status="Open")
+    puts "Listing merge requests for #{git.repository_http_url}"
+    git.merge_requests(status).each do |mr|
+      puts mr.to_s
+    end
+  end
+
+  def open_merge_request(id)
+    raise ArgumentError, "Merge request id required" unless id
+    url = git.merge_request_url(id)
+    %x(xdg-open #{url})
+  end
+
+  def show_usage
+    result = []
+    puts "Usage:"
+    cli = File.basename($0)
+    result << "#{cli} list [status]"
+    result << "#{cli} show ID"
+    result << "#{cli} checkout ID: Check out MR into branch"
+    result.each do |m|
+      puts "\t#{m}"
+    end
+  end
+
+  def checkout_merge_request(id)
+    raise "Broken"
+    `git checkout -b merge-requests/#{id}`
+    `git merge #{git.remote} refs/merge-requests/#{id}`
+  end
+end
+
+
+cmd = ARGV[0]
+
+command = GitoriousCommand.new
+case cmd
+when "list"
+  command.list_merge_requests(ARGV[1])
+when "open"
+  mr_id = ARGV[1]
+  command.open_merge_request(mr_id)
+when "checkout"
+  mr_id = ARGV[1]
+  command.checkout_merge_request(mr_id)
+else
+  command.show_usage
+end
+
