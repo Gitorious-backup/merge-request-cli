@@ -24,7 +24,6 @@ class Git
   #   dir.join(".git/config")
   # end
 
-  # TODO: Look for 
   def gitorious_remote_url
     output = `git remote -v`.scan(/^#{remote}\s+(.*).git(.*)/)
     if output

@@ -1,0 +1,26 @@
+Gitorious CLI
+==========
+
+Provide a CLI interface to merge requests in your Gitorious
+repository: list merge requests, open them in a browser etc.
+
+Installation
+----------
+
+The git-merge-requests script should be put into a directory in your
+PATH, after which you may use is as a Git command.
+
+
+Requirements
+----------
+
+The tool is written in Ruby, and requires the following libraries:
+
+* rubygems
+* nokogiri
+
+Issues/TODO
+----------
+
+Lots! A non-documented issue is that we assume the Git remote on
+Gitorious is named "origin".
