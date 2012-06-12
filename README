@@ -42,6 +42,8 @@ Lots!
 * We should have a merge command (which merges and resolves)
 * Tab completion
 * Complete merge request statuses from project page on Gitorious
+* Determine if the merge request applies cleanly to the branch it's
+  proposed merged into
 
 Contributing
 ----------
