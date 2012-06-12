@@ -37,3 +37,5 @@ Issues/TODO
 
 Lots! A non-documented issue is that we assume the Git remote on
 Gitorious is named "origin".
+
+- We should have a merge command (which merges and resolves)
