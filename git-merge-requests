@@ -118,7 +118,7 @@ class GitoriousCommand
     puts "Usage:"
     cli = File.basename($0)
     result << "#{cli} list [status]"
-    result << "#{cli} show ID"
+    result << "#{cli} open ID"
     result << "#{cli} checkout ID: Check out MR into a new branch (merge-requests/ID)"
     result.each do |m|
       puts "\t#{m}"
